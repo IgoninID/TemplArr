@@ -14,17 +14,27 @@ int main()
     {
         arr.pushBack(i);
     }
+    cout << "\n";
     for (size_t i = 0; i < arr.length(); i++)
     {
         cout << arr[i] << " ";
     }
+    cout << "\n";
+    DynArr<int> arr3(arr);
+    for (size_t i = 0; i < arr3.length(); i++)
+    {
+        cout << arr3[i] << " ";
+    }
+    cout << "\n";
     for (size_t i = 0; i < arr.length(); i++)
     {
         arr[i] = 5;
     }
+    cout << "\n";
     for (size_t i = 0; i < arr.length(); i++)
     {
         cout << arr[i] << " ";
     }
+    cout << "\n";
     return 0;
 }

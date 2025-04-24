@@ -15,6 +15,20 @@ void test()
 	assert(arr1.length() == 1);
 	assert(arr1[0] == 0);
 
+	// тест конструктора копирования
+	DynArr<int> arr_c(5);
+	for (size_t i = 0; i < arr_c.length(); i++)
+	{
+		arr_c[i] = i;
+	}
+	DynArr<int> arr_r(arr_c);
+	//DynArr<int> arr_r = arr_c;
+	assert(arr_r.length() == arr_c.length());
+	for (size_t i = 0; i < arr_c.length(); i++)
+	{
+			assert(arr_r[i] == arr_c[i]);
+	}
+
 	// тест вставки в начало
 	DynArr<int> arr3_push(3);
 	arr3_push.pushFront(5);
@@ -52,6 +66,9 @@ void test()
 	assert(arr4_popf.popFront() == 0);
 	assert(arr4_popf.length() == 3);
 	assert(arr4_popf[0] == 1);
+	arr4_popf.pushFront(5);
+	assert(arr4_popf.length() == 4);
+	assert(arr4_popf[0] == 5);
 
 	// тест очистки массива
 	DynArr<int> arr4_clear(4);

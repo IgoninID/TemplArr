@@ -20,7 +20,7 @@ private:
 	/// ћетод создани€ массива заполненного 0
 	/// </summary>
 	/// <param name="mem - выдел€ема€ пам€ть"></param>
-	/// <param name="len - размер резерва"></param>
+	/// <param name="len - размер массива"></param>
 	/// <param name="beg - начало массива в резерве"></param>
 	void create(size_t mem, size_t len, size_t beg)
 	{
@@ -53,11 +53,66 @@ public:
 	}
 
 	/// <summary>
+	///  онструктор копировани€
+	/// </summary>
+	/// <param name="arr - копируемый массив"></param>
+	DynArr(const DynArr<T>& arr)
+	{
+		create(arr.length(), arr.length(), 0);
+		copy(arr.Array + arr.begArr, arr.Array + arr.endArr, this->Array);
+		//for (size_t i = 0; i < this->length(); i++)
+		//{
+		//	this->Array[i] = arr.Array[i];
+		//}
+	}
+
+	/// <summary>
+	///  онструктор перемещени€
+	/// </summary>
+	/// <param name="arr"></param>
+	DynArr(DynArr<T>&& arr)
+	{
+		create(arr.length(), arr.length(), 0);
+		copy(arr.Array + arr.begArr, arr.Array + arr.endArr, this->Array);
+		arr.Clear();
+	}
+
+	/// <summary>
+	/// ќператор перемещени€
+	/// </summary>
+	/// <param name="arr"></param>
+	/// <returns></returns>
+	DynArr<T>& operator =(DynArr<T>&& arr)
+	{
+		return DynArr(arr);
+	}
+
+	/// <summary>
+	/// ќператор копировани€
+	/// </summary>
+	/// <param name="arr"></param>
+	/// <returns></returns>
+	DynArr<T>& operator =(const DynArr<T>& arr)
+	{
+		return DynArr(arr);
+	}
+
+	/// <summary>
 	/// ƒеструктор
 	/// </summary>
 	~DynArr()
 	{
 		delete[] Array;
+	}
+
+	size_t getBegin() const
+	{
+		return begArr;
+	}
+
+	size_t getEnd() const
+	{
+		return endArr;
 	}
 
 	/// <summary>
@@ -77,7 +132,7 @@ public:
 	/// ќчистка массива с заданием размера нового массива
 	/// </summary>
 	/// <param name="size - размер нового массива"></param>
-	void Init(size_t size)
+	DynArr<T>& Init(size_t size)
 	{
 		delete[] Array;
 		create(size, size, 0);
@@ -90,13 +145,14 @@ public:
 	/// <returns>
 	/// ƒлина массива
 	/// </returns>
-	size_t length()
+	size_t length() const
 	{
 		return endArr - begArr;
 	}
 
 	/// <summary>
 	/// ѕерегрузка оператора [] (дл€ чтени€, изменени€ элемента по индексу)
+	/// ≈сли индекс больше длины массива беретьс€ последний элемент
 	/// </summary>
 	/// <param name="i - индекс массива"></param>
 	/// <returns>
@@ -124,10 +180,11 @@ public:
 		{
 			T* temp = Array;
 			create(Size + length() / 2 + 1, length(), begArr + length() / 2 + 1); // увеличиваем резерв пам€ти (добавл€ем половину реального размера массива к резерву)
-			for (size_t i = 0; i < length(); i++)
-			{
-				Array[begArr + i] = temp[i];
-			}
+			copy(temp, temp + length(), Array + begArr);
+			//for (size_t i = 0; i < length(); i++)
+			//{
+			//	Array[begArr + i] = temp[i];
+			//}
 			delete[] temp;
 		}
 		begArr--;
@@ -148,10 +205,11 @@ public:
 		{
 			T* temp = Array;
 			create(Size + length() / 2 + 1, length(), begArr); // увеличиваем резерв пам€ти (добавл€ем половину реального размера массива к резерву)
-			for (size_t i = begArr; i < endArr; i++)
-			{
-				Array[i] = temp[i];
-			}
+			copy(temp+begArr, temp + endArr, Array + begArr);
+			//for (size_t i = begArr; i < endArr; i++)
+			//{
+			//	Array[i] = temp[i];
+			//}
 			delete[] temp;
 		}
 		Array[endArr] = elem;
@@ -172,10 +230,11 @@ public:
 			T* temp = Array;
 			size_t begTemp = begArr;
 			create(Size - begArr, length(), 0);
-			for (size_t i = 0; i < length(); i++)
-			{
-				Array[i] = temp[begTemp + i];
-			}
+			copy(temp + begTemp, temp + length(), Array);
+			//for (size_t i = 0; i < length(); i++)
+			//{
+			//	Array[i] = temp[begTemp + i];
+			//}
 			delete[] temp;
 		}
 		if (length() > 0)
@@ -197,10 +256,11 @@ public:
 		{
 			T* temp = Array;
 			create(endArr, length(), begArr);
-			for (size_t i = begArr; i < endArr; i++)
-			{
-				Array[i] = temp[i];
-			}
+			copy(temp + begArr, temp + endArr, Array + begArr);
+			//for (size_t i = begArr; i < endArr; i++)
+			//{
+			//	Array[i] = temp[i];
+			//}
 			delete[] temp;
 		}
 		if (length() > 0)
