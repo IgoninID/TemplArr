@@ -84,7 +84,11 @@ public:
 	/// <returns></returns>
 	DynArr<T>& operator =(DynArr<T>&& arr)
 	{
-		return DynArr(arr);
+		if (this != &arr)
+		{
+			return DynArr(arr);
+		}
+		return *this;
 	}
 
 	/// <summary>
@@ -103,16 +107,6 @@ public:
 	~DynArr()
 	{
 		delete[] Array;
-	}
-
-	size_t getBegin() const
-	{
-		return begArr;
-	}
-
-	size_t getEnd() const
-	{
-		return endArr;
 	}
 
 	/// <summary>
@@ -218,6 +212,72 @@ public:
 	}
 
 	/// <summary>
+	/// Вставка элемента по индексу
+	/// </summary>
+	/// <param name="elem - элемент"></param>
+	/// <param name="ind - индекс"></param>
+	/// <returns>
+	/// Указатель на массив
+	/// </returns>
+	DynArr<T>& pushAt(T elem, size_t ind)
+	{
+		if (ind >= length())
+			return pushBack(elem);
+		if (ind <= begArr)
+			return pushFront(elem);
+		if (endArr == Size)
+		{
+			T* temp = Array;
+			create(Size + length() / 2 + 1, length(), begArr); // увеличиваем резерв памяти (добавляем половину реального размера массива к резерву)
+			copy(temp + begArr, temp + endArr, Array + begArr);
+			delete[] temp;
+		}
+		T* temp = new T[length()-ind];
+		copy(Array+begArr+ind, Array + endArr, temp);
+		Array[begArr+ind] = elem;
+		copy(temp, temp + length()-ind, Array + begArr + ind+1);
+		delete[] temp;
+		endArr++;
+		return *this;
+	}
+	
+	/// <summary>
+	/// Удаление элемента по индексу
+	/// </summary>
+	/// <param name="ind - индекс"></param>
+	/// <returns>
+	/// Удаленный элемент
+	/// </returns>
+	T popAt(size_t ind)
+	{
+		if (ind >= endArr-1)
+			return popBack();
+		if (ind <= begArr)
+			return popFront();
+		if (Size - endArr > length())
+		{
+			T* temp = Array;
+			create(endArr, length(), begArr);
+			copy(temp + begArr, temp + endArr, Array + begArr);
+			//for (size_t i = begArr; i < endArr; i++)
+			//{
+			//	Array[i] = temp[i];
+			//}
+			delete[] temp;
+		}
+		T* temp = new T[length() - ind-1];
+		T elem = Array[begArr + ind];
+		copy(Array + begArr + ind+1, Array + endArr, temp);
+		copy(temp, temp + length() - ind-1, Array+begArr+ind);
+		delete[] temp;
+		if (length() > 0)
+		{
+			endArr--;
+		}
+		return elem;
+	}
+
+	/// <summary>
 	/// Удаление элемента в начале
 	/// </summary>
 	/// <returns>
@@ -230,11 +290,11 @@ public:
 			T* temp = Array;
 			size_t begTemp = begArr;
 			create(Size - begArr, length(), 0);
-			copy(temp + begTemp, temp + length(), Array);
-			//for (size_t i = 0; i < length(); i++)
-			//{
-			//	Array[i] = temp[begTemp + i];
-			//}
+			//copy(temp + begTemp, temp + length(), Array);
+			for (size_t i = 0; i < length(); i++)
+			{
+				Array[i] = temp[begTemp + i];
+			}
 			delete[] temp;
 		}
 		if (length() > 0)
