@@ -1,3 +1,5 @@
+// Автор: Игонин В.Ю.
+
 #include "Arr.h"
 #include <cassert>
 

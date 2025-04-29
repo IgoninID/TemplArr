@@ -1,4 +1,6 @@
-﻿#include <iostream>
+﻿// Автор: Игонин В.Ю.
+
+#include <iostream>
 #include "Arr.h"
 
 using namespace std;
